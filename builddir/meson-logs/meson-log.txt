@@ -1,0 +1,84 @@
+Build started at 2020-03-26T00:45:27.401307
+Main binary: /usr/bin/python3.6
+Build Options: -Dprefix=/usr -Dbackend=ninja
+Python system: Linux
+The Meson build system
+Version: 0.52.1
+Source dir: /home/stu/src/skein512sum
+Build dir: /home/stu/src/skein512sum/builddir
+Build type: native build
+Project name: skein512sum
+Project version: undefined
+No CXXFLAGS in the environment, not changing global flags.
+No LDFLAGS in the environment, not changing global flags.
+No CPPFLAGS in the environment, not changing global flags.
+Sanity testing C++ compiler: c++
+Is cross compiler: False.
+Sanity check compiler command line: c++ /home/stu/src/skein512sum/builddir/meson-private/sanitycheckcpp.cc -o /home/stu/src/skein512sum/builddir/meson-private/sanitycheckcpp.exe -pipe -D_FILE_OFFSET_BITS=64
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/stu/src/skein512sum/builddir/meson-private/sanitycheckcpp.exe
+C++ compiler for the build machine: c++ (gcc 9.2.0 "c++ (Gentoo 9.2.0-r2 p3) 9.2.0")
+C++ linker for the build machine: GNU ld.bfd 2.33.1
+No CXXFLAGS in the environment, not changing global flags.
+No LDFLAGS in the environment, not changing global flags.
+No CPPFLAGS in the environment, not changing global flags.
+Sanity testing C++ compiler: c++
+Is cross compiler: False.
+Sanity check compiler command line: c++ /home/stu/src/skein512sum/builddir/meson-private/sanitycheckcpp.cc -o /home/stu/src/skein512sum/builddir/meson-private/sanitycheckcpp.exe -pipe -D_FILE_OFFSET_BITS=64
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/stu/src/skein512sum/builddir/meson-private/sanitycheckcpp.exe
+C++ compiler for the host machine: c++ (gcc 9.2.0 "c++ (Gentoo 9.2.0-r2 p3) 9.2.0")
+C++ linker for the host machine: GNU ld.bfd 2.33.1
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Target machine cpu family: x86_64
+Target machine cpu: x86_64
+Running compile:
+Working directory:  /home/stu/src/skein512sum/builddir/meson-private/tmpazcqkaqm
+Command line:  c++ /home/stu/src/skein512sum/builddir/meson-private/tmpazcqkaqm/testfile.cpp -o /home/stu/src/skein512sum/builddir/meson-private/tmpazcqkaqm/output.exe -pipe -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Wl,--start-group -lssc -Wl,--end-group -Wl,--allow-shlib-undefined 
+
+Code:
+ int main() { return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Library ssc found: YES
+Build targets in project: 1
+Found ninja-1.9.0.git.kitware.dyndep-1.jobserver-1 at /usr/bin/ninja
+Running compile:
+Working directory:  /tmp/tmpv5y7dt96
+Command line:  c++ /tmp/tmpv5y7dt96/testfile.cpp -o /tmp/tmpv5y7dt96/output.obj -pipe -D_FILE_OFFSET_BITS=64 -c -std=c++17 
+
+Code:
+ int i = static_cast<int>(0);
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Compiler accepts -std=c++17: YES
+Running compile:
+Working directory:  /home/stu/src/skein512sum/builddir/meson-private/tmpwwmd_97g
+Command line:  c++ /home/stu/src/skein512sum/builddir/meson-private/tmpwwmd_97g/testfile.cpp -o /home/stu/src/skein512sum/builddir/meson-private/tmpwwmd_97g/output.obj -pipe -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive --print-search-dirs 
+
+Code:
+ 
+Compiler stdout:
+ install: /usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/
+programs: =/usr/libexec/gcc/x86_64-pc-linux-gnu/9.2.0/:/usr/libexec/gcc/x86_64-pc-linux-gnu/9.2.0/:/usr/libexec/gcc/x86_64-pc-linux-gnu/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/:/usr/lib/gcc/x86_64-pc-linux-gnu/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../../x86_64-pc-linux-gnu/bin/x86_64-pc-linux-gnu/9.2.0/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../../x86_64-pc-linux-gnu/bin/
+libraries: =/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../../x86_64-pc-linux-gnu/lib/x86_64-pc-linux-gnu/9.2.0/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../../x86_64-pc-linux-gnu/lib/../lib64/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../x86_64-pc-linux-gnu/9.2.0/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../../lib64/:/lib/x86_64-pc-linux-gnu/9.2.0/:/lib/../lib64/:/usr/lib/x86_64-pc-linux-gnu/9.2.0/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../../x86_64-pc-linux-gnu/lib/:/usr/lib/gcc/x86_64-pc-linux-gnu/9.2.0/../../../:/lib/:/usr/lib/
+
+Compiler stderr:
+ 
