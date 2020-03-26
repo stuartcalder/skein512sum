@@ -44,6 +44,9 @@ Skein512Sum::Skein512Sum (int const argc, char const *argv[])
 	if (input_filename.empty())
 		errx( "Error: No input file specified.\n\n%s", Help_Output );
 
+	_OPENBSD_UNVEIL( input_filename.c_str(), "r" );
+	_OPENBSD_UNVEIL( nullptr, nullptr );
+
 	ssc::OS_Map os_map;
 	// Open input file.
 	os_map.os_file = ssc::open_existing_os_file( input_filename.c_str(), true );

@@ -8,6 +8,9 @@
 
 int main (int const argc, char const *argv[])
 {
+
+	_OPENBSD_UNVEIL( "/usr", "rx" );
+
 	Skein512Sum{ argc, argv };
 	return EXIT_SUCCESS;
 } /* int main (argc,argv) */
