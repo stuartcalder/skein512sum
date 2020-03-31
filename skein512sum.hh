@@ -36,10 +36,10 @@ public:
 	_CTIME_CONST(int) Max_Output_Bits = 4096;
 	_CTIME_CONST(int) Max_Output_Bytes = Max_Output_Bits / CHAR_BIT;
 	_CTIME_CONST(int) Max_Length_Arg_Chars = 4;
-	_CTIME_CONST(auto) Help_Output = "Usage: skein512sum [-l <output bits>] <file>\n"
-					 "Arguments to switches MUST be in seperate words. (i.e. skein512sum -l 1024 file; NOT skein512sum -l1024 file)\n"
-		                         "-h, --help           : Print this help output.\n"
-					 "-l, --length <number>: Hash output bits (max 4096).\n";
+	_CTIME_CONST(auto&) Help_Output = "Usage: skein512sum [-l <output bits>] <file>\n"
+			 		  "Arguments to switches MUST be in seperate words. (i.e. skein512sum -l 1024 file; NOT skein512sum -l1024 file)\n"
+		                          "-h, --help           : Print this help output.\n"
+					  "-l, --length <number>: Hash output bits (max 4096).\n";
 	/* CONSTRUCTORS */
 	Skein512Sum (void) = delete;
 	Skein512Sum (int const argc, char const *argv[]);

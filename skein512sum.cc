@@ -76,4 +76,5 @@ Skein512Sum::Skein512Sum (int const argc, char const *argv[])
 	ssc::close_os_file( os_map.os_file );
 
 	ssc::print_integral_buffer<u8_t>( output_buffer, num_output_bytes );
+	std::printf( "  %s\n", input_filename.c_str() );
 }/* ~ Skein512Sum (int const,char const *[]) */
