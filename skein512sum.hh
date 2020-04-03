@@ -36,18 +36,21 @@ public:
 	_CTIME_CONST(int) Max_Output_Bits = 4096;
 	_CTIME_CONST(int) Max_Output_Bytes = Max_Output_Bits / CHAR_BIT;
 	_CTIME_CONST(int) Max_Length_Arg_Chars = 4;
-	_CTIME_CONST(auto&) Help_Output = "Usage: skein512sum [-l <output bits>] <file>\n"
+	_CTIME_CONST(auto&) Help_Output = "Usage: skein512sum [-l <output bits>] [-s] <input>\n"
 			 		  "Arguments to switches MUST be in seperate words. (i.e. skein512sum -l 1024 file; NOT skein512sum -l1024 file)\n"
 		                          "-h, --help           : Print this help output.\n"
-					  "-l, --length <number>: Hash output bits (max 4096).\n";
+					  "-l, --length <number>: Hash output bits (max 4096).\n"
+					  "-s, --string <input> : Interpret <input> as a string to be hashed instead of file, which is the default.\n";
 	/* CONSTRUCTORS */
 	Skein512Sum (void) = delete;
 	Skein512Sum (int const argc, char const *argv[]);
+	/* PUBLIC PROCEDURES */
 private:
 	/* PRIVATE DATA */
 	u8_t         output_buffer [Max_Output_Bytes];
-	std::string  input_filename;
-	unsigned int num_output_bits = 512;
+	int num_output_bits = 512;
 	/* PRIVATE PROCEDURES */
 	void process_arguments_ (Arg_Map_t&&);
+	void hash_file_   (std::string const &input_filename);
+	void hash_string_ (std::string const &input_string);
 };/* ~ class Skein512Sum */
