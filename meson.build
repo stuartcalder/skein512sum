@@ -50,6 +50,10 @@ else
 	assert(false)
 endif
 
+if get_option('enable_debugging_symbols')
+	cpp_flags += '-g'
+endif
+
 if os != 'windows'
 	executable('skein512sum', sources: source, dependencies: depends,
 		   include_directories: include, install: true,
