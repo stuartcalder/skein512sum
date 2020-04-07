@@ -29,7 +29,7 @@ public:
 	static_assert (CHAR_BIT == 8);
 	using Arg_Map_t = ssc::Arg_Mapping::Arg_Map_t;
 	using Threefish_t = ssc::Threefish<512>;
-	using UBI_t = ssc::Unique_Block_Iteration<Threefish_t,512>;
+	using UBI_t = ssc::Unique_Block_Iteration<512>;
 	using Skein_t = ssc::Skein<512>;
 	_CTIME_CONST(int) Min_Output_Bits = 8;
 	_CTIME_CONST(int) Min_Output_Bytes = Min_Output_Bits / CHAR_BIT;

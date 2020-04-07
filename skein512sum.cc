@@ -9,6 +9,12 @@
 
 void Skein512Sum::process_arguments_ (Arg_Map_t &&args)
 {
+	enum class Branch_E {
+		None,
+		String,
+		File
+	} branch = Branch_E::None;
+	std::string str_arg;
 	for (size_t i = 1; i < args.size(); ++i) {
 		if (args[ i ].first == "-h" || args[ i ].first == "--help") {
 			std::fputs( Help_Output, stdout );
@@ -33,10 +39,31 @@ void Skein512Sum::process_arguments_ (Arg_Map_t &&args)
 					num_output_bits = length;
 			}
 		} else if (args[ i ].first == "-s" || args[ i ].first == "--string") {
+#if 0
 			hash_string_( args[ i ].second );
+#endif
+			if (branch == Branch_E::None) {
+				branch = Branch_E::String;
+				str_arg = args[ i ].second;
+			}
 		} else if (!args[ i ].second.empty()) {// Then it must be a filename.
+#if 0
 			hash_file_( args[ i ].second );
+#endif
+			if (branch == Branch_E::None) {
+				branch = Branch_E::File;
+				str_arg = args[ i ].second;
+			}
 		}
+	}
+	switch (branch) {
+		default:
+		case (Branch_E::String):
+			hash_string_( str_arg );
+			break;
+			case (Branch_E::File):
+			hash_file_( str_arg );
+			break;
 	}
 }/* ~ void process_arguments_ (Arg_Mapt_t&&) */
 
