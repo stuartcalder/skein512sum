@@ -88,6 +88,7 @@ void Skein512Sum::hash_file_ (std::string const &input_filename)
 	// Memory-map the input file.
 	ssc::map_file( os_map, true );
 
+#if 0
 	// Setup crypto buffer.
 	_CTIME_CONST(int) Crypto_Buffer_Size = Threefish_t::Buffer_Bytes + UBI_t::Buffer_Bytes;
 
@@ -96,12 +97,21 @@ void Skein512Sum::hash_file_ (std::string const &input_filename)
 	Threefish_t threefish{ reinterpret_cast<u64_t *>(crypto_buffer) };
 	UBI_t       ubi{ &threefish, (crypto_buffer + Threefish_t::Buffer_Bytes) };
 	Skein_t     skein{ &ubi };
+#endif
+	typename UBI_f::Data ubi_data;
 
 	int num_output_bytes = num_output_bits / CHAR_BIT;
-	if (Skein_t::State_Bytes == num_output_bytes) {
-		skein.hash_native( output_buffer, os_map.ptr, os_map.size );
+	if (Skein_f::State_Bytes == num_output_bytes) {
+		Skein_f::hash_native( &ubi_data,
+				      output_buffer,
+				      os_map.ptr,
+				      os_map.size );
 	} else {
-		skein.hash( output_buffer, os_map.ptr, os_map.size, num_output_bytes );
+		Skein_f::hash( &ubi_data,
+				output_buffer,
+				os_map.ptr,
+				os_map.size,
+				num_output_bytes );
 	}
 
 	ssc::unmap_file( os_map );
@@ -116,18 +126,28 @@ void Skein512Sum::hash_string_ (std::string const &input_string)
 
 	_OPENBSD_UNVEIL (nullptr,nullptr);
 
+#if 0
 	_CTIME_CONST(int) Crypto_Buffer_Size = Threefish_t::Buffer_Bytes + UBI_t::Buffer_Bytes;
 
 	alignas(sizeof(u64_t)) u8_t crypto_buffer [Crypto_Buffer_Size];
 	Threefish_t threefish{ reinterpret_cast<u64_t *>(crypto_buffer) };
 	UBI_t       ubi{ &threefish, (crypto_buffer + Threefish_t::Buffer_Bytes) };
 	Skein_t     skein{ &ubi };
+#endif
+	typename UBI_f::Data ubi_data;
 
 	int num_output_bytes = num_output_bits / CHAR_BIT;
-	if (Skein_t::State_Bytes == num_output_bytes) {
-		skein.hash_native( output_buffer, reinterpret_cast<u8_t const *>(input_string.c_str()), input_string.size() );
+	if (Skein_f::State_Bytes == num_output_bytes) {
+		Skein_f::hash_native( &ubi_data,
+				      output_buffer,
+				      reinterpret_cast<u8_t const*>(input_string.c_str()),
+				      input_string.size() );
 	} else {
-		skein.hash( output_buffer, reinterpret_cast<u8_t const *>(input_string.c_str()), input_string.size(), num_output_bytes );
+		Skein_f::hash( &ubi_data,
+			       output_buffer,
+			       reinterpret_cast<u8_t const*>(input_string.c_str()),
+			       input_string.size(),
+			       num_output_bytes );
 	}
 
 	ssc::print_integral_buffer<u8_t>( output_buffer, num_output_bytes );

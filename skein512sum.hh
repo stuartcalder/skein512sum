@@ -12,9 +12,13 @@
 /* OS-specific file i/o headers */
 #include <ssc/files/os_map.hh>
 /* Crypto headers */
+#if 0
 #include <ssc/crypto/threefish.hh>
 #include <ssc/crypto/unique_block_iteration.hh>
 #include <ssc/crypto/skein.hh>
+#endif
+#include <ssc/crypto/unique_block_iteration_f.hh>
+#include <ssc/crypto/skein_f.hh>
 /* C library headers */
 #include <cstdlib>
 #include <cstring>
@@ -28,9 +32,13 @@ class Skein512Sum
 public:
 	static_assert (CHAR_BIT == 8);
 	using Arg_Map_t = ssc::Arg_Mapping::Arg_Map_t;
+#if 0
 	using Threefish_t = ssc::Threefish<512>;
 	using UBI_t = ssc::Unique_Block_Iteration<512>;
 	using Skein_t = ssc::Skein<512>;
+#endif
+	using UBI_f = ssc::Unique_Block_Iteration_F<512>;
+	using Skein_f = ssc::Skein_F<512>;
 	_CTIME_CONST(int) Min_Output_Bits = 8;
 	_CTIME_CONST(int) Min_Output_Bytes = Min_Output_Bits / CHAR_BIT;
 	_CTIME_CONST(int) Max_Output_Bits = 4096;
