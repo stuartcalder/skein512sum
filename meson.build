@@ -16,42 +16,37 @@ lib       = []
 depends   = []
 cpp_flags = []
 
-_Define_Flag_Prefix = '-D'
 # The define flag prefix is different on Windows with MSVC compiler.
 if os == 'windows' and cc.get_id() == 'msvc'
 	_Define_Flag_Prefix = '/D'
+else
+	_Define_Flag_Prefix = '-D'
 endif
-
+# Handle OSX-specifics.
+if   os == 'darwin'
+	# On OSX we use memset_s for secure memory zeroing, which requires this macro to be defined.
+	_flag = _Define_Flag_Prefix + '__STDC_WANT_LIB_EXT1__=1'
+	cpp_flags += _flag
+endif
 # Handle BSD-specifics.
 if   os == 'openbsd' or os == 'freebsd' or os == 'darwin'
 	include += '/usr/local/include'
 	lib     += '/usr/local/lib'
+	depends += cc.find_library('ssc', dirs: lib)
 # Handle GNU/Linux-specifics.
 elif os == 'linux'
 	include += '/usr/include'
+	depends += cc.find_library('ssc')
 # Handle Windows-specifics.
 elif os == 'windows'
 	include += 'C:/include'
 	lib     += 'C:/lib'
-else
-	assert(false)
-endif
-
-if os == 'openbsd' or os == 'freebsd' or os == 'darwin'
-	depends += cc.find_library('ssc', dirs: lib)
-elif os == 'linux'
-	depends += cc.find_library('ssc')
-elif os == 'windows'
 	depends += cc.find_library('bcrypt')
 	depends += cc.find_library('ssc', static: true, dirs: lib)
 	_flag = _Define_Flag_Prefix + '__IMPORT_STATIC'
 	cpp_flags += _flag
 else
 	assert(false)
-endif
-if os == 'darwin'
-	_flag = _Define_Flag_Prefix + '__STDC_WANT_LIB_EXT1__=1'
-	cpp_flags += _flag
 endif
 
 if get_option('enable_debugging_symbols')
