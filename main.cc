@@ -5,12 +5,14 @@
 */
 #include <cstdlib>
 #include "skein512sum.hh"
+using namespace ssc;
 
 int main (int const argc, char const *argv[])
 {
 
 	_OPENBSD_UNVEIL( "/usr", "rx" );
 
-	Skein512Sum{ argc, argv };
+	C_Argument_Map c_arg_map{ argc, argv };
+	Skein512Sum{ c_arg_map };
 	return EXIT_SUCCESS;
 } /* int main (argc,argv) */

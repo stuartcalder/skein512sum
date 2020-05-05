@@ -6,7 +6,11 @@
 /* General headers */
 #include <ssc/general/integers.hh>
 #include <ssc/general/macros.hh>
-#include <ssc/general/arg_mapping.hh>
+#if 0
+#	include <ssc/general/arg_mapping.hh>
+#else
+#	include <ssc/general/c_argument_map.hh>
+#endif
 #include <ssc/general/error_conditions.hh>
 #include <ssc/general/print.hh>
 /* OS-specific file i/o headers */
@@ -31,7 +35,10 @@ class Skein512Sum
 {
 public:
 	static_assert (CHAR_BIT == 8);
+#if 0
 	using Arg_Map_t = ssc::Arg_Mapping::Arg_Map_t;
+#else
+#endif
 #if 0
 	using Threefish_t = ssc::Threefish<512>;
 	using UBI_t = ssc::Unique_Block_Iteration<512>;
@@ -51,14 +58,24 @@ public:
 					  "-s, --string <input> : Interpret <input> as a string to be hashed instead of file, which is the default.\n";
 	/* CONSTRUCTORS */
 	Skein512Sum (void) = delete;
+#if 0
 	Skein512Sum (int const argc, char const *argv[]);
+#else
+	Skein512Sum (ssc::C_Argument_Map &);
+#endif
 	/* PUBLIC PROCEDURES */
 private:
 	/* PRIVATE DATA */
 	u8_t         output_buffer [Max_Output_Bytes];
 	int num_output_bits = 512;
 	/* PRIVATE PROCEDURES */
+#if 0
 	void process_arguments_ (Arg_Map_t&&);
 	void hash_file_   (std::string const &input_filename);
 	void hash_string_ (std::string const &input_string);
+#else
+	void process_arguments_ (ssc::C_Argument_Map &);
+	void hash_file_   (char const *input_filename, int const input_filename_size);
+	void hash_string_ (char const *string, int const string_size);
+#endif
 };/* ~ class Skein512Sum */
