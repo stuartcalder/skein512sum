@@ -64,8 +64,8 @@ void Skein512Sum::process_arguments_ (C_Argument_Map &c_arg_map)
 	}
 #else
 	int const count = c_arg_map.count;
-	char const *str_arg;
-	int str_arg_size;
+	char const *str_arg = nullptr;
+	int str_arg_size = 0;
 	for( int i = 0; i < count; ++i ) {
 		if( c_arg_map.c_strings[ i ] ) {
 			if( c_arg_map.argument_cmp( i, "-h"    , (sizeof("-h")     - 1) ) ||
@@ -102,7 +102,7 @@ void Skein512Sum::process_arguments_ (C_Argument_Map &c_arg_map)
 						else if( number > Max_Output_Bits)
 							errx( "Error: The specified bit length (%d) is more than the maximum allowed (%d)\n",
 							      number, Max_Output_Bits );
-						else if( num_digits % CHAR_BIT != 0 )
+						else if( number % CHAR_BIT != 0 )
 							errx( "Error: The specified bit length (%d) is not divisible into 8-bit bytes.\n",
 							      number );
 						num_output_bits = number;
