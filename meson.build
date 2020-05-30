@@ -35,6 +35,9 @@ if   os == 'openbsd' or os == 'freebsd' or os == 'darwin'
 	depends += cc.find_library('ssc', dirs: lib)
 # Handle GNU/Linux-specifics.
 elif os == 'linux'
+	if cc.get_id() == 'gcc'
+		cpp_flags += '-flto'
+	endif
 	include += '/usr/include'
 	depends += cc.find_library('ssc')
 # Handle Windows-specifics.
@@ -43,7 +46,7 @@ elif os == 'windows'
 	lib     += 'C:/lib'
 	depends += cc.find_library('bcrypt')
 	depends += cc.find_library('ssc', static: true, dirs: lib)
-	_flag = _Define_Flag_Prefix + '__IMPORT_STATIC'
+	_flag = _Define_Flag_Prefix + 'SSC_IMPORT_STATIC'
 	cpp_flags += _flag
 else
 	assert(false)
