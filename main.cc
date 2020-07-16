@@ -11,7 +11,7 @@ int
 main (int const argc, char const *argv[])
 {
 
-	SSC_OPENBSD_UNVEIL( "/usr", "rx" );
+	SHIM_OPENBSD_UNVEIL( "/usr", "rx" );
 
 	C_Argument_Map c_arg_map{ argc, argv };
 	Skein512Sum{ c_arg_map };

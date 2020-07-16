@@ -33,26 +33,25 @@ void Skein512Sum::process_arguments_ (C_Argument_Map &c_arg_map)
 				if( c_arg_map.next_string_is_valid( i ) ) {
 					++i;
 					if( c_arg_map.sizes[ i ] > Max_Length_Arg_Chars )
-						errx( "Error: The speficied bit length (%zu) is too many characters (max %d).\n",
-						      str_arg_size,
-						      Max_Length_Arg_Chars );
+						SHIM_ERRX ("Error: The speficied bit length (%d) is too many characters (max %d).\n",
+						      	   str_arg_size, Max_Length_Arg_Chars);
 					{
 						char *temp = static_cast<char*>(std::malloc( c_arg_map.max_string_size + 1 ));
 						size_t const size = c_arg_map.sizes[ i ];
 						if( temp == nullptr )
-							errx( Generic_Error::Alloc_Failure );
+							SHIM_ERRX (Generic_Error::Alloc_Failure);
 						std::memcpy( temp, c_arg_map.c_strings[ i ], size + 1 );
 						int const num_digits = shift_left_digits( temp, size );
 						int const number = std::atoi( temp );
 						if( number < Min_Output_Bits )
-							errx( "Error: The specified bit length (%d) is less than the minimum required (%d).\n",
-							      number, Min_Output_Bits );
+							SHIM_ERRX ("Error: The specified bit length (%d) is less than the minimum required (%d).\n",
+							      	   number, Min_Output_Bits);
 						else if( number > Max_Output_Bits)
-							errx( "Error: The specified bit length (%d) is more than the maximum allowed (%d)\n",
-							      number, Max_Output_Bits );
+							SHIM_ERRX ("Error: The specified bit length (%d) is more than the maximum allowed (%d)\n",
+							      	   number, Max_Output_Bits);
 						else if( number % CHAR_BIT != 0 )
-							errx( "Error: The specified bit length (%d) is not divisible into 8-bit bytes.\n",
-							      number );
+							SHIM_ERRX ("Error: The specified bit length (%d) is not divisible into 8-bit bytes.\n",
+							      	   number);
 						num_output_bits = number;
 						std::free( temp );
 					}
@@ -86,13 +85,13 @@ void Skein512Sum::process_arguments_ (C_Argument_Map &c_arg_map)
 	}/*for( int i = 0; i < count; ++i )*/
 	switch (branch) {
 	default:
-		errx( "Error: Invalid Branch_E\n" );
+		SHIM_ERRX ("Error: Invalid Branch_E\n");
 		break;
 	case (Branch_E::String):
 		if( str_arg != nullptr )
 			hash_string_( str_arg, str_arg_size );
 		else
-			errx( "" );
+			SHIM_ERRX ("");
 		break;
 	case (Branch_E::File):
 		if( str_arg != nullptr )
@@ -106,21 +105,21 @@ Skein512Sum::Skein512Sum (C_Argument_Map &c_arg_map)
 	process_arguments_( c_arg_map );
 }
 
-void Skein512Sum::hash_file_ (char const *str_arg, int const str_arg_size)
+void Skein512Sum::hash_file_ (char const * SHIM_RESTRICT str_arg, int const str_arg_size)
 {
 	if( str_arg_size == 0 )
-		errx( "Error: No input file specified.\n\n%s", Help_Output );
+		SHIM_ERRX ("Error: No input file specified.\n\n%s", Help_Output);
 
-	SSC_OPENBSD_UNVEIL (str_arg,"r");
-	SSC_OPENBSD_UNVEIL (nullptr,nullptr);
+	SHIM_OPENBSD_UNVEIL (str_arg, "r");
+	SHIM_OPENBSD_UNVEIL (nullptr, nullptr);
 
-	ssc::OS_Map os_map;
+	Shim_Map shim_map;
 	// Open input file.
-	os_map.os_file = ssc::open_existing_os_file( str_arg, true );
+	shim_map.shim_file = shim_open_existing_filepath( str_arg, true );
 	// Determine input file size.
-	os_map.size = ssc::get_file_size( os_map.os_file );
+	shim_map.size = shim_file_size( shim_map.shim_file );
 	// Memory-map the input file.
-	ssc::map_file( os_map, true );
+	shim_map_memory( &shim_map, true );
 
 	typename UBI_f::Data ubi_data;
 
@@ -128,26 +127,26 @@ void Skein512Sum::hash_file_ (char const *str_arg, int const str_arg_size)
 	if (Skein_f::State_Bytes == num_output_bytes) {
 		Skein_f::hash_native( &ubi_data,
 				      output_buffer,
-				      os_map.ptr,
-				      os_map.size );
+				      shim_map.ptr,
+				      shim_map.size );
 	} else {
 		Skein_f::hash( &ubi_data,
 				output_buffer,
-				os_map.ptr,
-				os_map.size,
+				shim_map.ptr,
+				shim_map.size,
 				num_output_bytes );
 	}
 
-	ssc::unmap_file( os_map );
-	ssc::close_os_file( os_map.os_file );
+	shim_unmap_memory( &shim_map );
+	shim_close_file( shim_map.shim_file );
 
-	ssc::print_integral_buffer<u8_t>( output_buffer, num_output_bytes );
+	shim_print_byte_buffer( output_buffer, num_output_bytes );
 	std::printf( "  %s\n", str_arg );
 }
 
-void Skein512Sum::hash_string_ (char const *str_arg, int const str_arg_size)
+void Skein512Sum::hash_string_ (char const * SHIM_RESTRICT str_arg, int const str_arg_size)
 {
-	SSC_OPENBSD_UNVEIL (nullptr,nullptr);
+	SHIM_OPENBSD_UNVEIL (nullptr,nullptr);
 
 	typename UBI_f::Data ubi_data;
 
@@ -155,16 +154,16 @@ void Skein512Sum::hash_string_ (char const *str_arg, int const str_arg_size)
 	if (Skein_f::State_Bytes == num_output_bytes) {
 		Skein_f::hash_native( &ubi_data,
 				      output_buffer,
-				      reinterpret_cast<u8_t const*>(str_arg),
+				      reinterpret_cast<uint8_t const*>(str_arg),
 				      str_arg_size );
 	} else {
 		Skein_f::hash( &ubi_data,
 			       output_buffer,
-			       reinterpret_cast<u8_t const*>(str_arg),
+			       reinterpret_cast<uint8_t const*>(str_arg),
 			       str_arg_size,
 			       num_output_bytes );
 	}
 
-	ssc::print_integral_buffer<u8_t>( output_buffer, num_output_bytes );
+	shim_print_byte_buffer( output_buffer, num_output_bytes );
 	std::printf( "  \"%s\"\n", str_arg );
 }

@@ -4,13 +4,12 @@
 	See accompanying LICENSE file for licensing information.
 */
 /* General headers */
-#include <ssc/general/integers.hh>
-#include <ssc/general/macros.hh>
-#include <ssc/general/c_argument_map.hh>
+#include <shim/macros.h>
+#include <shim/print.h>
+#include <shim/errors.h>
+#include <shim/map.h>
 #include <ssc/general/error_conditions.hh>
-#include <ssc/general/print.hh>
-/* OS-specific file i/o headers */
-#include <ssc/files/os_map.hh>
+#include <ssc/general/c_argument_map.hh>
 /* Crypto headers */
 #include <ssc/crypto/unique_block_iteration_f.hh>
 #include <ssc/crypto/skein_f.hh>
@@ -19,8 +18,6 @@
 #include <cstring>
 /* C++ library headers */
 #include <string>
-
-using namespace ssc::ints;
 
 class Skein512Sum
 {
@@ -41,20 +38,20 @@ public:
 					     "-l, --length <number>: Hash output bits (max 4096).\n"
 					     "-s, --string <input> : Interpret <input> as a string to be hashed instead of file, which is the default.\n";
 /* CONSTRUCTORS */
-	Skein512Sum (void) = delete;
+	Skein512Sum () = delete;
 	Skein512Sum (ssc::C_Argument_Map &);
 /* PUBLIC PROCEDURES */
 private:
 /* PRIVATE DATA */
-	u8_t output_buffer [Max_Output_Bytes];
-	int  num_output_bits = 512;
+	uint8_t output_buffer [Max_Output_Bytes];
+	int     num_output_bits = 512;
 /* PRIVATE PROCEDURES */
 	void
 	process_arguments_ (ssc::C_Argument_Map &);
 
 	void
-	hash_file_ (char const *input_filename, int const input_filename_size);
+	hash_file_ (char const * SHIM_RESTRICT input_filename, int const input_filename_size);
 	
 	void
-	hash_string_ (char const *string, int const string_size);
+	hash_string_ (char const * SHIM_RESTRICT string, int const string_size);
 };// ~ class Skein512Sum
