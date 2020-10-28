@@ -1,67 +1,92 @@
-#  Copyright (c) 2020 Stuart Steven Calder
-#  All rights reserved.
-#  See accompanying LICENSE file for licensing information.
-###########################################################
-# Define project.
-project('skein512sum', 'cpp', default_options: ['cpp_std=c++17', 'strip=true', 'buildtype=release',
-                                                'optimization=3', 'cpp_eh=none'])
-# Get C++ compiler.
-cc = meson.get_compiler('cpp')
-# Get the host's operating system.
+project('skein512sum', 'c', default_options: ['c_std=c18', 'optimization=3', 'buildtype=release', 'strip=true'])
+
+_PROJECT = 'skein512sum'
+_LANG = 'c'
+
+_UNIXLIKE_OPERATING_SYSTEMS  = ['openbsd', 'freebsd', 'netbsd', 'darwin', 'linux']
+_SUPPORTED_OPERATING_SYSTEMS = _UNIXLIKE_OPERATING_SYSTEMS + ['windows']
+_GCC_COMPATIBLE_COMPILERS    = ['gcc', 'clang']
+_SUPPORTED_COMPILERS         = _GCC_COMPATIBLE_COMPILERS + ['msvc']
+
+compiler = meson.get_compiler(_LANG)
 os = host_machine.system()
-# Default source files.
-source    = ['main.cc', 'skein512sum.cc']
-include   = []
-lib       = []
-depends   = []
-cpp_flags = []
 
-# The define flag prefix is different on Windows with MSVC compiler.
-if os == 'windows' and cc.get_id() == 'msvc'
-	_Define_Flag_Prefix = '/D'
+assert (os in _SUPPORTED_OPERATING_SYSTEMS, 'You are trying to build ' + _PROJECT + ' using an unsupported operating system!')
+assert (compiler.get_id() in _SUPPORTED_COMPILERS, 'You are trying to build ' + _PROJECT + ' using an unsupported compiler!')
+
+if os == 'windows' and compiler.get_id() == 'msvc'
+	_D_PREFIX = '/D'
 else
-	_Define_Flag_Prefix = '-D'
+	_D_PREFIX = '-D'
 endif
-# Handle OSX-specifics.
-if   os == 'darwin'
-	# On OSX we use memset_s for secure memory zeroing, which requires this macro to be defined.
-	_flag = _Define_Flag_Prefix + '__STDC_WANT_LIB_EXT1__=1'
-	cpp_flags += _flag
+
+src = [
+  'args.c',
+  'main.c',
+  'skein512sum.c'
+  ]
+# Setup these empty arrays that we will be appending to depending on OS, etc.
+lib_deps   = []
+lib_dir    = []
+lang_flags = []
+inc_dir    = []
+# Determine flags to pass to gcc-compatible compilers.
+gcc_compatible_flags = [
+  '-fvisibility=hidden',
+  '-fstrict-aliasing',
+  '-Wall',
+  '-funroll-loops'
+  ]
+if os != 'netbsd' and compiler.get_id() != 'clang'
+  gcc_compatible_flags += '-flto'
 endif
-# Handle BSD-specifics.
-if   os == 'openbsd' or os == 'freebsd' or os == 'darwin'
-	include += '/usr/local/include'
-	lib     += '/usr/local/lib'
-	depends += cc.find_library('ssc', dirs: lib)
-# Handle GNU/Linux-specifics.
+
+if os == 'darwin' # On OSX we require __STDC_WANT_LIB_EXT1__ to be defined as 1, for access to memset_s.
+  _flag = _D_PREFIX + '__STDC_WANT_LIB_EXT1__=1'
+  lang_flags += _flag
+endif
+
+if os in _UNIXLIKE_OPERATING_SYSTEMS
+  if get_option('native_optimize')
+    lang_flags += '-march=native'
+  endif
+  if compiler.get_id() in _GCC_COMPATIBLE_COMPILERS
+    lang_flags += gcc_compatible_flags
+  endif
+endif
+
+if os in _UNIXLIKE_OPERATING_SYSTEMS and compiler.get_id() in _GCC_COMPATIBLE_COMPILERS
+  lang_flags += gcc_compatible_flags
+endif
+
+if os == 'openbsd' or os == 'freebsd' or os == 'darwin'
+  inc_dir += '/usr/local/include'
+  lib_dir += '/usr/local/lib'
+elif os == 'netbsd'
+  inc_dir += '/usr/local/include'
+  inc_dir += '/usr/pkg/include'
+  lib_dir += '/usr/local/lib'
+  lib_dir += '/usr/pkg/lib'
 elif os == 'linux'
-	if cc.get_id() == 'gcc'
-		cpp_flags += '-flto'
-	endif
-	include += '/usr/include'
-	depends += cc.find_library('ssc')
-# Handle Windows-specifics.
+  inc_dir += '/usr/include'
+  if compiler.get_id() == 'gcc'
+    lang_flags += '-flto'
+  endif
 elif os == 'windows'
-	include += 'C:/include'
-	lib     += 'C:/lib'
-	depends += cc.find_library('bcrypt')
-	depends += cc.find_library('ssc', static: true, dirs: lib)
-	_flag = _Define_Flag_Prefix + 'SSC_IMPORT_STATIC'
-	cpp_flags += _flag
-else
-	assert(false)
+  inc_dir += 'C:/include'
+  lib_dir += 'C:/lib'
 endif
 
-if get_option('enable_debugging_symbols')
-	cpp_flags += '-g'
-endif
+lib_deps += compiler.find_library('symm', dirs: lib_dir)
+lib_deps += compiler.find_library('shim', dirs: lib_dir)
 
-if os != 'windows'
-	executable('skein512sum', sources: source, dependencies: depends,
-		   include_directories: include, install: true,
-		   cpp_args: cpp_flags)
+if os == 'windows'
+  executable(_PROJECT, sources: src, dependencies: lib_deps,
+	     include_directories: inc_dir, install: true,
+	     c_args: lang_flags, install_dir: 'C:/bin')
 else
-	executable('skein512sum', sources: source, dependencies: depends,
-	           include_directories: include, install: true,
-		   cpp_args: cpp_flags, install_dir: 'C:/bin')
+  assert (os in _UNIXLIKE_OPERATING_SYSTEMS, 'This branch covers unixlike operating systems.')
+  executable(_PROJECT, sources: src, dependencies: lib_deps,
+	     include_directories: inc_dir, install: true,
+	     c_args: lang_flags)
 endif
