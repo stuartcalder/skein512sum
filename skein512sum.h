@@ -17,7 +17,7 @@ enum {
 	SKEIN512SUM_MODE_STRING
 };
 
-typedef struct SHIM_PUBLIC {
+typedef struct {
 	uint8_t     output_buf [SKEIN512SUM_MAX_OUTPUT_BYTES];
 	Symm_UBI512 ubi512;
 	char *      input;

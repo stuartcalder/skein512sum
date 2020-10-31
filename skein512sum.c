@@ -13,4 +13,3 @@ print_help () {
                 "-s, --string <input> : Interpret <input> as a string to be hashed instead of file, which is the default."
 	);
 }
-
