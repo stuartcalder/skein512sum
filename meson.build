@@ -80,6 +80,11 @@ endif
 lib_deps += compiler.find_library('symm', dirs: lib_dir)
 lib_deps += compiler.find_library('shim', dirs: lib_dir)
 
+if get_option('strict_arg_processing')
+  _flag = _D_PREFIX + 'SKEIN512SUM_EXT_STRICT_ARG_PROCESSING'
+  lang_flags += _flag
+endif
+
 if os == 'windows'
   executable(_PROJECT, sources: src, dependencies: lib_deps,
 	     include_directories: inc_dir, install: true,

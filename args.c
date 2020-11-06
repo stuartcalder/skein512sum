@@ -2,6 +2,12 @@
 #include <shim/strings.h>
 #include <shim/operations.h>
 
+#ifdef SKEIN512SUM_EXT_STRICT_ARG_PROCESSING
+#	define HANDLE_INVALID_ARGS_(arg) SHIM_ERRX ("Error: Invalid argument: %s\n", arg)
+#else
+#	define HANDLE_INVALID_ARGS_(arg) /* Nil */
+#endif
+
 Shim_Arg_Handler_t *
 short_parser (char const * str) {
 	size_t const str_size = strlen( str );
@@ -16,6 +22,7 @@ short_parser (char const * str) {
 					return s_handler;
 			}
 	}
+	HANDLE_INVALID_ARGS_ (str);
 	return NULL;
 }
 
@@ -34,6 +41,7 @@ long_parser (char const * str) {
 				return string_handler;
 		} break;
 	}
+	HANDLE_INVALID_ARGS_ (str);
 	return NULL;
 }
 
