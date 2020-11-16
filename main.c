@@ -38,9 +38,9 @@ file_mode_ (Skein512sum * ctx) {
 	SHIM_OPENBSD_UNVEIL (ctx->input, "r");
 	SHIM_OPENBSD_UNVEIL (NULL, NULL);
 	Shim_Map map;
-	map.file = shim_open_existing_filepath( ctx->input, true );
-	map.size = shim_file_size( map.file );
-	shim_map_memory( &map, true );
+	map.file = shim_enforce_open_filepath( ctx->input, true );
+	map.size = shim_enforce_get_file_size( map.file );
+	shim_enforce_map_memory( &map, true );
 	int const num_output_bytes = ctx->num_output_bits / CHAR_BIT;
 	switch( num_output_bytes ) {
 		case SYMM_THREEFISH512_BLOCK_BYTES: {
@@ -58,8 +58,8 @@ file_mode_ (Skein512sum * ctx) {
 
 		} break;
 	}
-	shim_unmap_memory( &map );
-	shim_close_file( map.file );
+	shim_enforce_unmap_memory( &map );
+	shim_enforce_close_file( map.file );
 	shim_print_byte_buffer( ctx->output_buf, num_output_bytes );
 	printf( "  %s\n", ctx->input );
 }

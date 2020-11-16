@@ -74,7 +74,7 @@ static void
 parse_input_ (char * SHIM_RESTRICT input, size_t const buf_size, Skein512sum * ctx) {
 	if( ctx->input )
 		SHIM_ERRX ("Error: An input was already specified.\n");
-	ctx->input = (char *)shim_checked_malloc( buf_size );
+	ctx->input = (char *)shim_enforce_malloc( buf_size );
 	memcpy( ctx->input, input, buf_size );
 }
 DEFINE_HANDLER_ (l) {
@@ -83,7 +83,7 @@ DEFINE_HANDLER_ (l) {
 		char const * length_str = str_arr[ 1 ];
 		if( length_str ) {
 			size_t const buf_size = strlen( length_str ) + 1;
-			char * temp = (char *)shim_checked_malloc( buf_size );
+			char * temp = (char *)shim_enforce_malloc( buf_size );
 			memcpy( temp, length_str, buf_size );
 			(void)shim_shift_left_digits( temp, (buf_size - 1) );
 			int const length = atoi( temp );
