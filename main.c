@@ -13,8 +13,7 @@ str_mode_ (Skein512sum *);
 int
 main (int argc, char ** argv) {
 	SHIM_OPENBSD_UNVEIL ("/usr", "rx");
-	Skein512sum state;
-	memset( &state, 0, sizeof(state) );
+	Skein512sum state = SKEIN512SUM_NULL_INIT;
 	state.num_output_bits = 512;
 	shim_process_args( argc, argv, arg_processor, &state );
 	switch( state.mode ) {
