@@ -65,6 +65,7 @@ arg_processor (char const * str, void * SHIM_RESTRICT v_ctx) {
 #define DEFINE_HANDLER_(prefix) \
 	void \
 	prefix##_handler (char ** str_arr, int const count, void * SHIM_RESTRICT v_ctx)
+#define CTX_ ((Skein512sum *)v_ctx)
 
 DEFINE_HANDLER_ (h) {
 	print_help();
@@ -78,7 +79,6 @@ parse_input_ (char * SHIM_RESTRICT input, size_t const buf_size, Skein512sum * c
 	memcpy( ctx->input, input, buf_size );
 }
 DEFINE_HANDLER_ (l) {
-	Skein512sum * ctx = (Skein512sum *)v_ctx;
 	if( count >= 2 ) {
 		char const * length_str = str_arr[ 1 ];
 		if( length_str ) {
@@ -90,40 +90,35 @@ DEFINE_HANDLER_ (l) {
 			free( temp );
 			if( length % 8 != 0 )
 				SHIM_ERRX ("Error: Length must be divisible into 8-bit bytes.\n");
-			ctx->num_output_bits = length;
+			CTX_->num_output_bits = length;
 			str_arr[ 1 ] = NULL;
 
 		}
 	}
 }
 DEFINE_HANDLER_ (s) {
-	Skein512sum * ctx = (Skein512sum *)v_ctx;
-	if( !ctx->input ) {
+	if( !CTX_->input ) {
 		if( count >= 2 ) {
 			char * string_str = str_arr[ 1 ];
 			if( string_str ) {
 				size_t const buf_size = strlen( string_str ) + 1;
-				parse_input_( string_str, buf_size, ctx );
-				ctx->mode = SKEIN512SUM_MODE_STRING;
+				parse_input_( string_str, buf_size, CTX_ );
+				CTX_->mode = SKEIN512SUM_MODE_STRING;
 				str_arr[ 1 ] = NULL;
 			}
 		}
 	}
 }
 DEFINE_HANDLER_ (file) {
-	Skein512sum * ctx = (Skein512sum *)v_ctx;
-	if( !ctx->input ) {
+	if( !CTX_->input ) {
 		if( count >= 1 ) {
 			char * filename = str_arr[ 0 ];
 			if( filename ) {
 				size_t const buf_size = strlen( filename ) + 1;
-				parse_input_( filename, buf_size, ctx );
-				ctx->mode = SKEIN512SUM_MODE_FILE;
+				parse_input_( filename, buf_size, CTX_ );
+				CTX_->mode = SKEIN512SUM_MODE_FILE;
 				str_arr[ 0 ] = NULL;
 			}
 		}
 	}
 }
-
-
-
