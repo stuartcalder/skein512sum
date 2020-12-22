@@ -88,7 +88,7 @@ DEFINE_HANDLER_ (l) {
 			(void)shim_shift_left_digits( temp, (buf_size - 1) );
 			int const length = atoi( temp );
 			free( temp );
-			if( length % 8 != 0 )
+			if( length % 8 )
 				SHIM_ERRX ("Error: Length must be divisible into 8-bit bytes.\n");
 			CTX_->num_output_bits = length;
 			str_arr[ 1 ] = NULL;
