@@ -68,8 +68,7 @@ str_mode_ (Skein512sum * ctx) {
 		SHIM_ERRX ("Error: No input string specified.\n");
 	SHIM_OPENBSD_UNVEIL (NULL, NULL);
 	int const num_output_bytes = ctx->num_output_bits / CHAR_BIT;
-	switch( ctx->num_output_bits ) {
-	switch( num_output_bytes )
+	switch( num_output_bytes ) {
 		case SYMM_THREEFISH512_BLOCK_BYTES: {
 			symm_skein512_hash_native( &ctx->ubi512,
 						   ctx->output_buf,
