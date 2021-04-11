@@ -1,4 +1,4 @@
-project('skein512sum', 'c', default_options: ['c_std=c18', 'optimization=3', 'buildtype=release', 'strip=true'])
+project('skein512sum', 'c', default_options: ['c_std=c17', 'optimization=3', 'buildtype=release', 'strip=true'])
 
 _PROJECT = 'skein512sum'
 _LANG = 'c'

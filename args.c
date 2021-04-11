@@ -8,7 +8,7 @@
 #	define HANDLE_INVALID_ARGS_(arg) /* Nil */
 #endif
 
-Shim_Arg_Handler_t *
+Shim_Arg_Handler_f *
 short_parser (char const * str) {
 	size_t const str_size = strlen( str );
 	switch( str_size ) {
@@ -26,7 +26,7 @@ short_parser (char const * str) {
 	return NULL;
 }
 
-Shim_Arg_Handler_t *
+Shim_Arg_Handler_f *
 long_parser (char const * str) {
 	size_t const str_size = strlen( str );
 	switch( str_size ) {
@@ -45,12 +45,12 @@ long_parser (char const * str) {
 	return NULL;
 }
 
-Shim_Arg_Handler_t *
+Shim_Arg_Handler_f *
 floating_parser (char const * str) {
 	return file_handler;
 }
 
-Shim_Arg_Parser_t *
+Shim_Arg_Parser_f *
 arg_processor (char const * str, void * SHIM_RESTRICT v_ctx) {
 	int type = shim_argtype( str );
 	switch( type ) {

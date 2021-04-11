@@ -5,23 +5,23 @@
 
 SHIM_BEGIN_DECLS
 
-Shim_Arg_Handler_t *
+Shim_Arg_Handler_f *
 short_parser (char const *);
 
-Shim_Arg_Handler_t *
+Shim_Arg_Handler_f *
 long_parser (char const *);
 
-Shim_Arg_Handler_t *
+Shim_Arg_Handler_f *
 floating_parser (char const *);
 
-Shim_Arg_Parser_t *
+Shim_Arg_Parser_f *
 arg_processor (char const *, void * SHIM_RESTRICT);
 
 #define PROTOTYPE_HANDLER_(prefix) \
 	void \
 	prefix##_handler (char **, int const, void * SHIM_RESTRICT)
 #define EQUIVALENT_HANDLER_(long_p, short_p) \
-	static Shim_Arg_Handler_t * const long_p##_handler = short_p##_handler
+	static Shim_Arg_Handler_f * const long_p##_handler = short_p##_handler
 
 PROTOTYPE_HANDLER_ (h);
 PROTOTYPE_HANDLER_ (l);
