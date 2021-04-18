@@ -24,7 +24,7 @@ main (int argc, char ** argv) {
 			str_mode_( &state );
 		} break;
 		default:
-			SHIM_ERRX ("Error: Invalid skein512sum mode (%d).\n", state.mode);
+			shim_errx("Error: Invalid skein512sum mode (%d).\n", state.mode);
 	}
 	free( state.input );
 	return EXIT_SUCCESS;
@@ -33,7 +33,7 @@ main (int argc, char ** argv) {
 void
 file_mode_ (Skein512sum * ctx) {
 	if( !ctx->input )
-		SHIM_ERRX ("Error: No input filename specified.\n");
+		shim_errx("Error: No input filename specified.\n");
 	SHIM_OPENBSD_UNVEIL (ctx->input, "r");
 	SHIM_OPENBSD_UNVEIL (NULL, NULL);
 	Shim_Map map;
@@ -65,7 +65,7 @@ file_mode_ (Skein512sum * ctx) {
 void
 str_mode_ (Skein512sum * ctx) {
 	if( !ctx->input )
-		SHIM_ERRX ("Error: No input string specified.\n");
+		shim_errx("Error: No input string specified.\n");
 	SHIM_OPENBSD_UNVEIL (NULL, NULL);
 	int const num_output_bytes = ctx->num_output_bits / CHAR_BIT;
 	switch( num_output_bytes ) {

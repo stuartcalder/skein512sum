@@ -3,7 +3,7 @@
 #include <shim/operations.h>
 
 #ifdef SKEIN512SUM_EXT_STRICT_ARG_PROCESSING
-#	define HANDLE_INVALID_ARGS_(arg) SHIM_ERRX ("Error: Invalid argument: %s\n", arg)
+#	define HANDLE_INVALID_ARGS_(arg) shim_errx("Error: Invalid argument: %s\n", arg)
 #else
 #	define HANDLE_INVALID_ARGS_(arg) /* Nil */
 #endif
@@ -74,7 +74,7 @@ DEFINE_HANDLER_ (h) {
 static void
 parse_input_ (char * SHIM_RESTRICT input, size_t const buf_size, Skein512sum * ctx) {
 	if( ctx->input )
-		SHIM_ERRX ("Error: An input was already specified.\n");
+		shim_errx("Error: An input was already specified.\n");
 	ctx->input = (char *)shim_enforce_malloc( buf_size );
 	memcpy( ctx->input, input, buf_size );
 }
@@ -89,7 +89,7 @@ DEFINE_HANDLER_ (l) {
 			int const length = atoi( temp );
 			free( temp );
 			if( length % 8 )
-				SHIM_ERRX ("Error: Length must be divisible into 8-bit bytes.\n");
+				shim_errx("Error: Length must be divisible into 8-bit bytes.\n");
 			CTX_->num_output_bits = length;
 			str_arr[ 1 ] = NULL;
 
