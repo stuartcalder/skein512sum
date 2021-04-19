@@ -8,40 +8,37 @@
 #	define HANDLE_INVALID_ARGS_(arg) /* Nil */
 #endif
 
+#define STR_EQ_(s0, s1)   (!strcmp(s0, s1))
+#define STR_TO_F_(s, fn)  if (STR_EQ_(str, s)) return fn
+
 Shim_Arg_Handler_f *
 short_parser (char const * str) {
-	size_t const str_size = strlen( str );
-	switch( str_size ) {
+	size_t const str_size = strlen(str);
+	switch (str_size) {
 		case 2:
-			switch( str[ 1 ] ) {
-				case 'h':
-					return h_handler;
-				case 'l':
-					return l_handler;
-				case 's':
-					return s_handler;
+			switch (str[1]) {
+				case 'h': return h_handler;
+				case 'l': return l_handler;
+				case 's': return s_handler;
 			}
 	}
-	HANDLE_INVALID_ARGS_ (str);
+	HANDLE_INVALID_ARGS_(str);
 	return NULL;
 }
 
 Shim_Arg_Handler_f *
 long_parser (char const * str) {
-	size_t const str_size = strlen( str );
-	switch( str_size ) {
-		case 6: {
-			if( strcmp( str, "--help" ) == 0 )
-				return help_handler;
-		} break;
-		case 8: {
-			if( strcmp( str, "--length" ) == 0 )
-				return length_handler;
-			if( strcmp( str, "--string" ) == 0 )
-				return string_handler;
-		} break;
+	size_t const str_size = strlen(str);
+	switch (str_size) {
+		case 6:
+			STR_TO_F_("--help", help_handler);
+			break;
+		case 8:
+			STR_TO_F_("--length", length_handler);
+			STR_TO_F_("--string", string_handler);
+			break;
 	}
-	HANDLE_INVALID_ARGS_ (str);
+	HANDLE_INVALID_ARGS_(str);
 	return NULL;
 }
 
@@ -52,72 +49,65 @@ floating_parser (char const * str) {
 
 Shim_Arg_Parser_f *
 arg_processor (char const * str, void * SHIM_RESTRICT v_ctx) {
-	int type = shim_argtype( str );
-	switch( type ) {
-		case SHIM_ARGTYPE_SHORT:
-			return short_parser;
-		case SHIM_ARGTYPE_LONG:
-			return long_parser;
+	int type = shim_argtype(str);
+	switch (type) {
+		case SHIM_ARGTYPE_SHORT: return short_parser;
+		case SHIM_ARGTYPE_LONG:  return long_parser;
 	}
 	return floating_parser;
 }
 
-#define DEFINE_HANDLER_(prefix) \
+#define HANDLER_(prefix) \
 	void \
 	prefix##_handler (char ** str_arr, int const count, void * SHIM_RESTRICT v_ctx)
 #define CTX_ ((Skein512sum *)v_ctx)
 
-DEFINE_HANDLER_ (h) {
-	print_help();
-	exit( EXIT_SUCCESS );
-}
+HANDLER_(h) { print_help(); exit(EXIT_SUCCESS); }
+
 static void
 parse_input_ (char * SHIM_RESTRICT input, size_t const buf_size, Skein512sum * ctx) {
-	if( ctx->input )
-		shim_errx("Error: An input was already specified.\n");
-	ctx->input = (char *)shim_enforce_malloc( buf_size );
-	memcpy( ctx->input, input, buf_size );
+	shim_assert_msg(!ctx->input, "Error: An input was already specified!\n");
+	ctx->input = (char *)shim_enforce_malloc(buf_size);
+	memcpy(ctx->input, input, buf_size);
 }
-DEFINE_HANDLER_ (l) {
-	if( count >= 2 ) {
-		char const * length_str = str_arr[ 1 ];
-		if( length_str ) {
-			size_t const buf_size = strlen( length_str ) + 1;
-			char * temp = (char *)shim_enforce_malloc( buf_size );
-			memcpy( temp, length_str, buf_size );
-			(void)shim_shift_left_digits( temp, (buf_size - 1) );
-			int const length = atoi( temp );
-			free( temp );
-			if( length % 8 )
-				shim_errx("Error: Length must be divisible into 8-bit bytes.\n");
+HANDLER_(l) {
+	if (count >= 2) {
+		char const * length_str = str_arr[1];
+		if (length_str) {
+			size_t const buf_size = strlen(length_str) + 1;
+			char * temp = (char *)shim_enforce_malloc(buf_size);
+			memcpy(temp, length_str, buf_size);
+			shim_shift_left_digits(temp, (buf_size - 1));
+			int const length = atoi(temp);
+			free(temp);
+			shim_assert_msg(!(length % 8), "Error: Length must be divisible into 8-bit bytes.\n");
 			CTX_->num_output_bits = length;
-			str_arr[ 1 ] = NULL;
-
+			str_arr[1] = NULL;
 		}
 	}
 }
-DEFINE_HANDLER_ (s) {
-	if( !CTX_->input ) {
-		if( count >= 2 ) {
-			char * string_str = str_arr[ 1 ];
-			if( string_str ) {
-				size_t const buf_size = strlen( string_str ) + 1;
-				parse_input_( string_str, buf_size, CTX_ );
+HANDLER_(s) {
+	if (!CTX_->input) {
+		if (count >= 2) {
+			char * string_str = str_arr[1];
+			if (string_str) {
+				size_t const buf_size = strlen(string_str) + 1;
+				parse_input_(string_str, buf_size, CTX_);
 				CTX_->mode = SKEIN512SUM_MODE_STRING;
-				str_arr[ 1 ] = NULL;
+				str_arr[1] = NULL;
 			}
 		}
 	}
 }
-DEFINE_HANDLER_ (file) {
-	if( !CTX_->input ) {
-		if( count >= 1 ) {
-			char * filename = str_arr[ 0 ];
-			if( filename ) {
-				size_t const buf_size = strlen( filename ) + 1;
-				parse_input_( filename, buf_size, CTX_ );
+HANDLER_(file) {
+	if (!CTX_->input) {
+		if (count >= 1) {
+			char * filename = str_arr[0];
+			if (filename) {
+				size_t const buf_size = strlen(filename) + 1;
+				parse_input_(filename, buf_size, CTX_);
 				CTX_->mode = SKEIN512SUM_MODE_FILE;
-				str_arr[ 0 ] = NULL;
+				str_arr[0] = NULL;
 			}
 		}
 	}
