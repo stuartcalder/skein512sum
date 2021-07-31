@@ -10,16 +10,16 @@ _SUPPORTED_COMPILERS         = _GCC_COMPATIBLE_COMPILERS + ['msvc']
 
 compiler = meson.get_compiler(_LANG)
 os = host_machine.system()
-shim_static = get_option('shim_static')
-symm_static = get_option('symm_static')
+Base_static = get_option('Base_static')
+Skc_static  = get_option('Skc_static')
 
 assert (os in _SUPPORTED_OPERATING_SYSTEMS, 'You are trying to build ' + _PROJECT + ' using an unsupported operating system!')
 assert (compiler.get_id() in _SUPPORTED_COMPILERS, 'You are trying to build ' + _PROJECT + ' using an unsupported compiler!')
 
 if os == 'windows' and compiler.get_id() == 'msvc'
-	_D_PREFIX = '/D'
+  _D = '/D'
 else
-	_D_PREFIX = '-D'
+  _D = '-D'
 endif
 
 src = [
@@ -33,11 +33,11 @@ lib_dir    = []
 lang_flags = []
 inc_dir    = []
 
-if shim_static
-  lang_flags += _D_PREFIX + 'SHIM_EXT_STATIC_LIB'
+if Base_static
+  lang_flags += _D + 'BASE_EXTERN_STATIC_LIB'
 endif
-if symm_static
-  lang_flags += _D_PREFIX + 'SYMM_EXT_STATIC_LIB'
+if Skc_static
+  lang_flags += _D + 'SKC_EXTERN_STATIC_LIB'
 endif
 # Determine flags to pass to gcc-compatible compilers.
 gcc_compatible_flags = [
@@ -51,7 +51,7 @@ if os != 'netbsd' and compiler.get_id() != 'clang'
 endif
 
 if os == 'darwin' # On MacOS we require __STDC_WANT_LIB_EXT1__ to be defined as 1, for access to memset_s.
-  lang_flags += _D_PREFIX + '__STDC_WANT_LIB_EXT1__=1'
+  lang_flags += _D + '__STDC_WANT_LIB_EXT1__=1'
 endif
 
 if os in _UNIXLIKE_OPERATING_SYSTEMS
@@ -85,11 +85,11 @@ elif os == 'windows'
   lib_dir += 'C:/lib'
 endif
 
-lib_deps += compiler.find_library('shim', dirs: lib_dir, static: shim_static)
-lib_deps += compiler.find_library('symm', dirs: lib_dir, static: symm_static)
+lib_deps += compiler.find_library('Base', dirs: lib_dir, static: Base_static)
+lib_deps += compiler.find_library('Skc', dirs: lib_dir, static: Skc_static)
 
 if get_option('strict_arg_processing')
-  lang_flags += _D_PREFIX + 'SKEIN512SUM_EXT_STRICT_ARG_PROCESSING'
+  lang_flags += _D + 'SKEIN512SUM_EXTERN_STRICT_ARG_PROCESSING'
 endif
 
 if os == 'windows'
