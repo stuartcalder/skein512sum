@@ -10,7 +10,6 @@ static void str_mode_  (Skein512sum*);
 
 #define ARRLEN_(array, type) ((sizeof(array) / sizeof(type)) - 1)
 static const Base_Arg_Long longs[] = {
-	BASE_ARG_LONG_LITERAL(file_argproc  , "file"),
 	BASE_ARG_LONG_LITERAL(help_argproc  , "help"),
 	BASE_ARG_LONG_LITERAL(length_argproc, "length"),
 	BASE_ARG_LONG_LITERAL(string_argproc, "string"),
@@ -18,7 +17,6 @@ static const Base_Arg_Long longs[] = {
 };
 #define N_LONGS_ ARRLEN_(longs, Base_Arg_Long)
 static const Base_Arg_Short shorts[] = {
-	BASE_ARG_SHORT_LITERAL(file_argproc  , 'f'),
 	BASE_ARG_SHORT_LITERAL(help_argproc  , 'h'),
 	BASE_ARG_SHORT_LITERAL(length_argproc, 'l'),
 	BASE_ARG_SHORT_LITERAL(string_argproc, 's'),
@@ -30,7 +28,7 @@ int main (int argc, char ** argv) {
 	BASE_OPENBSD_UNVEIL("/usr", "r");
 	Skein512sum state = SKEIN512SUM_DEFAULT_LITERAL;
 	Base_assert(argc);
-	Base_process_args(argc - 1, argv + 1, N_SHORTS_, shorts, N_LONGS_, longs, &state, NULL);
+	Base_process_args(argc - 1, argv + 1, N_SHORTS_, shorts, N_LONGS_, longs, &state, file_argproc);
 	switch(state.mode) {
 		case SKEIN512SUM_MODE_FILE:
 			file_mode_(&state);
