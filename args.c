@@ -44,10 +44,16 @@ PROC_(length) {
 	CTX_->num_output_bits = len;
 	return bap.consumed;
 }
+static char always_null = '\0';
 PROC_(string) {
 	Base_Arg_Parser bap;
 	Base_Arg_Parser_init(&bap, argv[0] + off, argc, argv);
-	Base_assert_msg(bap.to_read, BASE_ERR_S_GENERIC("No string specified"));
+	if (bap.to_read == NULL) {
+	  bap.to_read = &always_null;
+	  bap.size = 0;
+	  bap.consumed = 0;
+	}
+	//Base_assert_msg(bap.to_read, BASE_ERR_S_GENERIC("No string specified"));
 	CTX_->input = (char*)Base_malloc_or_die(bap.size + 1);
 	memcpy(CTX_->input, bap.to_read, bap.size + 1);
 	CTX_->mode = SKEIN512SUM_MODE_STRING;
