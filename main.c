@@ -27,6 +27,7 @@ static const Base_Arg_Short shorts[] = {
 int main (int argc, char ** argv) {
 	BASE_OPENBSD_UNVEIL("/usr", "r");
 	Skein512sum state = SKEIN512SUM_DEFAULT_LITERAL;
+	Skein512sum_init(&state);
 	Base_assert(argc);
 	Base_process_args(argc - 1, argv + 1, N_SHORTS_, shorts, N_LONGS_, longs, &state, file_argproc);
 	switch(state.mode) {

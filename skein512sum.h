@@ -33,6 +33,10 @@ typedef struct {
 #define SKEIN512SUM_NULL_LITERAL    (Skein512sum){{0}, SKC_UBI512_NULL_LITERAL, NULL, SKEIN512SUM_MODE_FILE,   0}
 #define SKEIN512SUM_DEFAULT_LITERAL (Skein512sum){{0}, SKC_UBI512_NULL_LITERAL, NULL, SKEIN512SUM_MODE_FILE, 512}
 
+BASE_INLINE void
+Skein512sum_init(Skein512sum* ctx)
+{ Skc_UBI512_init(&ctx->ubi512); }
+
 
 void print_help (void);
 void hash_file (R_(Skein512sum*), R_(const char*), const int);
