@@ -10,8 +10,8 @@ _SUPPORTED_COMPILERS         = _GCC_COMPATIBLE_COMPILERS + ['msvc']
 
 compiler = meson.get_compiler(_LANG)
 os = host_machine.system()
-Base_static = get_option('Base_static')
-Skc_static  = get_option('Skc_static')
+SSC_static = get_option('SSC_static')
+PPQ_static  = get_option('PPQ_static')
 
 assert (os in _SUPPORTED_OPERATING_SYSTEMS, 'You are trying to build ' + _PROJECT + ' using an unsupported operating system!')
 assert (compiler.get_id() in _SUPPORTED_COMPILERS, 'You are trying to build ' + _PROJECT + ' using an unsupported compiler!')
@@ -23,9 +23,9 @@ else
 endif
 
 src = [
-  'args.c',
-  'main.c',
-  'skein512sum.c'
+  'CommandLineArg.c',
+  'Main.c',
+  'Skein512sum.c'
   ]
 # Setup these empty arrays that we will be appending to depending on OS, etc.
 lib_deps   = []
@@ -33,11 +33,11 @@ lib_dir    = []
 lang_flags = []
 inc_dir    = []
 
-if Base_static
-  lang_flags += _D + 'BASE_EXTERN_STATIC_LIB'
+if SSC_static
+  lang_flags += _D + 'SSC_EXTERN_STATIC_LIB'
 endif
-if Skc_static
-  lang_flags += _D + 'SKC_EXTERN_STATIC_LIB'
+if PPQ_static
+  lang_flags += _D + 'PPQ_EXTERN_STATIC_LIB'
 endif
 # Determine flags to pass to gcc-compatible compilers.
 gcc_compatible_flags = [
@@ -85,8 +85,8 @@ elif os == 'windows'
   lib_dir += 'C:/lib'
 endif
 
-lib_deps += compiler.find_library('Base', dirs: lib_dir, static: Base_static)
-lib_deps += compiler.find_library('Skc', dirs: lib_dir, static: Skc_static)
+lib_deps += compiler.find_library('SSC', dirs: lib_dir, static: SSC_static)
+lib_deps += compiler.find_library('PPQ', dirs: lib_dir, static: PPQ_static)
 
 if get_option('strict_arg_processing')
   lang_flags += _D + 'SKEIN512SUM_EXTERN_STRICT_ARG_PROCESSING'
