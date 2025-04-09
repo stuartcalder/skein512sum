@@ -12,19 +12,17 @@ file_mode_(Skein512sum*);
 static void
 str_mode_(Skein512sum*);
 
-#define ARRLEN_(Array, Type) ((sizeof(Array) / sizeof(Type)) - 1)
+#define ARRLEN_(Array, Type) (sizeof(Array) / sizeof(Type))
 static const SSC_ArgLong longs[] = {
   SSC_ARGLONG_LITERAL(help_argproc  , "help"),
   SSC_ARGLONG_LITERAL(length_argproc, "length"),
   SSC_ARGLONG_LITERAL(string_argproc, "string"),
-  SSC_ARGLONG_NULL_LITERAL
 };
 #define N_LONGS_ ARRLEN_(longs, SSC_ArgLong)
 static const SSC_ArgShort shorts[] = {
   SSC_ARGSHORT_LITERAL(help_argproc  , 'h'),
   SSC_ARGSHORT_LITERAL(length_argproc, 'l'),
   SSC_ARGSHORT_LITERAL(string_argproc, 's'),
-  SSC_ARGSHORT_NULL_LITERAL
 };
 #define N_SHORTS_ ARRLEN_(shorts, SSC_ArgShort)
 
@@ -34,7 +32,12 @@ int main(int argc, char *argv[])
   Skein512sum state = SKEIN512SUM_DEFAULT_LITERAL;
   Skein512sum_init(&state);
   SSC_assert(argc);
-  SSC_processCommandLineArgs(argc - 1, argv + 1, N_SHORTS_, shorts, N_LONGS_, longs, &state, file_argproc);
+  SSC_processCommandLineArgs(
+   argc - 1, argv + 1,
+   N_SHORTS_, shorts,
+   N_LONGS_, longs,
+   &state,
+   file_argproc);
   switch(state.mode) {
     case SKEIN512SUM_MODE_FILE:
       file_mode_(&state);
@@ -56,20 +59,25 @@ void file_mode_(Skein512sum* ctx)
     SSC_errx("Error: No input filename specified.\n");
   SSC_OPENBSD_UNVEIL(ctx->input, "r");
   SSC_OPENBSD_UNVEIL(SSC_NULL, SSC_NULL);
-  SSC_MemMap map;
+  SSC_MemMap map = SSC_MEMMAP_NULL_LITERAL;
   map.file = SSC_FilePath_openOrDie(ctx->input, true);
   map.size = SSC_File_getSizeOrDie(map.file);
   SSC_MemMap_mapOrDie(&map, true);
-  SSC_assertMsg((ctx->num_output_bits <= SKEIN512SUM_MAX_OUTPUT_BITS),
-   "Num output bits %d over maximum %d!", ctx->num_output_bits, SKEIN512SUM_MAX_OUTPUT_BITS);
+  SSC_assertMsg(
+   (ctx->num_output_bits <= SKEIN512SUM_MAX_OUTPUT_BITS),
+   "Num output bits %d over maximum %d!",
+   ctx->num_output_bits,
+   SKEIN512SUM_MAX_OUTPUT_BITS);
   const int num_output_bytes = ctx->num_output_bits / CHAR_BIT;
   if (num_output_bytes == PPQ_THREEFISH512_BLOCK_BYTES)
-    PPQ_Skein512_hashNative(&ctx->ubi512,
+    PPQ_Skein512_hashNative(
+     &ctx->ubi512,
      ctx->output_buf,
      map.ptr,
      map.size);
   else
-    PPQ_Skein512_hash(&ctx->ubi512,
+    PPQ_Skein512_hash(
+     &ctx->ubi512,
      ctx->output_buf,
      map.ptr,
      map.size,
@@ -85,16 +93,21 @@ void str_mode_(Skein512sum* ctx)
   if (!ctx->input)
     SSC_errx("Error: No input string specified.\n");
   SSC_OPENBSD_UNVEIL(SSC_NULL, SSC_NULL);
-  SSC_assertMsg((ctx->num_output_bits <= SKEIN512SUM_MAX_OUTPUT_BITS),
-      "Num output bits %d over maximum %d!", ctx->num_output_bits, SKEIN512SUM_MAX_OUTPUT_BITS);
+  SSC_assertMsg(
+   (ctx->num_output_bits <= SKEIN512SUM_MAX_OUTPUT_BITS),
+   "Num output bits %d over maximum %d!",
+   ctx->num_output_bits,
+   SKEIN512SUM_MAX_OUTPUT_BITS);
   const int num_output_bytes = ctx->num_output_bits / CHAR_BIT;
   if (num_output_bytes == PPQ_THREEFISH512_BLOCK_BYTES)
-    PPQ_Skein512_hashNative(&ctx->ubi512,
+    PPQ_Skein512_hashNative(
+     &ctx->ubi512,
      ctx->output_buf,
      (const uint8_t*)ctx->input,
      strlen(ctx->input));
   else
-    PPQ_Skein512_hash(&ctx->ubi512,
+    PPQ_Skein512_hash(
+     &ctx->ubi512,
      ctx->output_buf,
      (const uint8_t*)ctx->input,
      strlen(ctx->input),
