@@ -1,4 +1,3 @@
 option('native_optimize', type: 'boolean', value: false)
 option('strict_arg_processing', type: 'boolean', value: true)
 option('SSC_static', type: 'boolean', value: false)
-option('PPQ_static', type: 'boolean', value: false)

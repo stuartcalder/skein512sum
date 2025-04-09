@@ -11,7 +11,6 @@ _SUPPORTED_COMPILERS         = _GCC_COMPATIBLE_COMPILERS + ['msvc']
 compiler = meson.get_compiler(_LANG)
 os = host_machine.system()
 SSC_static = get_option('SSC_static')
-PPQ_static  = get_option('PPQ_static')
 
 assert (os in _SUPPORTED_OPERATING_SYSTEMS, 'You are trying to build ' + _PROJECT + ' using an unsupported operating system!')
 assert (compiler.get_id() in _SUPPORTED_COMPILERS, 'You are trying to build ' + _PROJECT + ' using an unsupported compiler!')
@@ -35,9 +34,6 @@ inc_dir    = []
 
 if SSC_static
   lang_flags += _D + 'SSC_EXTERN_STATIC_LIB'
-endif
-if PPQ_static
-  lang_flags += _D + 'PPQ_EXTERN_STATIC_LIB'
 endif
 # Determine flags to pass to gcc-compatible compilers.
 gcc_compatible_flags = [
@@ -86,7 +82,7 @@ elif os == 'windows'
 endif
 
 lib_deps += compiler.find_library('SSC', dirs: lib_dir, static: SSC_static)
-lib_deps += compiler.find_library('PPQ', dirs: lib_dir, static: PPQ_static)
+lib_deps += compiler.find_library('TSC', dirs: lib_dir, static: false)
 
 if get_option('strict_arg_processing')
   lang_flags += _D + 'SKEIN512SUM_EXTERN_STRICT_ARG_PROCESSING'

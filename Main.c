@@ -69,19 +69,19 @@ void file_mode_(Skein512sum* ctx)
    ctx->num_output_bits,
    SKEIN512SUM_MAX_OUTPUT_BITS);
   const int num_output_bytes = ctx->num_output_bits / CHAR_BIT;
-  if (num_output_bytes == PPQ_THREEFISH512_BLOCK_BYTES)
-    PPQ_Skein512_hashNative(
+  if (num_output_bytes == TSC_THREEFISH512_BLOCK_BYTES)
+    TSC_Skein512_hashNative(
      &ctx->ubi512,
      ctx->output_buf,
      map.ptr,
      map.size);
   else
-    PPQ_Skein512_hash(
+    TSC_Skein512_hash(
      &ctx->ubi512,
      ctx->output_buf,
+     num_output_bytes,
      map.ptr,
-     map.size,
-     num_output_bytes);
+     map.size);
   SSC_MemMap_unmapOrDie(&map);
   SSC_File_closeOrDie(map.file);
   SSC_printBytes(ctx->output_buf, num_output_bytes);
@@ -99,19 +99,19 @@ void str_mode_(Skein512sum* ctx)
    ctx->num_output_bits,
    SKEIN512SUM_MAX_OUTPUT_BITS);
   const int num_output_bytes = ctx->num_output_bits / CHAR_BIT;
-  if (num_output_bytes == PPQ_THREEFISH512_BLOCK_BYTES)
-    PPQ_Skein512_hashNative(
+  if (num_output_bytes == TSC_THREEFISH512_BLOCK_BYTES)
+    TSC_Skein512_hashNative(
      &ctx->ubi512,
      ctx->output_buf,
      (const uint8_t*)ctx->input,
      strlen(ctx->input));
   else
-    PPQ_Skein512_hash(
+    TSC_Skein512_hash(
      &ctx->ubi512,
      ctx->output_buf,
+     num_output_bytes,
      (const uint8_t*)ctx->input,
-     strlen(ctx->input),
-     num_output_bytes);
+     strlen(ctx->input));
   SSC_printBytes(ctx->output_buf, num_output_bytes);
   printf( "  \"%s\"\n", ctx->input );
 }
